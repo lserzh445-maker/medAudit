@@ -13,7 +13,40 @@ const useAuditStore = create(
       logout: () => set({ loggedIn: false }),
 
       setAnswer: (qId, value) =>
-        set((state) => ({ answers: { ...state.answers, [qId]: value } })),
+        set((s) => {
+          const answers = { ...s.answers, [qId]: value }
+          let issues = s.issues
+
+          if (value === 'no') {
+            const cur = issues[qId]
+            if (!cur) {
+              issues = {
+                ...issues,
+                [qId]: {
+                  questionId: qId,
+                  blockId: BLOCK.id,
+                  status: 'выявлен',
+                  createdAt: new Date().toISOString(),
+                  closedAt: null,
+                  dueDate: null,
+                  assignee: null,
+                },
+              }
+            } else if (cur.status === 'закрыт') {
+              issues = { ...issues, [qId]: { ...cur, status: 'выявлен', closedAt: null } }
+            }
+          } else if (value === 'yes') {
+            const cur = issues[qId]
+            if (cur && cur.status !== 'закрыт') {
+              issues = {
+                ...issues,
+                [qId]: { ...cur, status: 'закрыт', closedAt: new Date().toISOString() },
+              }
+            }
+          }
+
+          return { answers, issues }
+        }),
 
       resetAnswer: (qId) =>
         set((state) => {

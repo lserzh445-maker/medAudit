@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import AppShell from '../components/layout/AppShell.jsx'
 import Card from '../components/ui/Card.jsx'
 import IssueCard from '../components/registry/IssueCard.jsx'
@@ -17,12 +17,16 @@ export default function RegistryScreen() {
   const [filter, setFilter] = useState('all')
 
   const list = Object.values(issues)
-  const filtered = list.filter((it) => {
-    if (filter === 'open') return it.status !== 'закрыт'
-    if (filter === 'closed') return it.status === 'закрыт'
-    if (filter === 'over') return isOverdue(it)
-    return true
-  })
+  const issueKeys = Object.keys(issues).sort().join(',')
+  const filtered = useMemo(() => {
+    return Object.values(issues).filter((it) => {
+      if (filter === 'open') return it.status !== 'закрыт'
+      if (filter === 'closed') return it.status === 'закрыт'
+      if (filter === 'over') return isOverdue(it)
+      return true
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, issueKeys])
 
   return (
     <AppShell>

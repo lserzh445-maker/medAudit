@@ -162,3 +162,15 @@ a:hover {
 .mx-detail .d-st.no{background:var(--color-no-bg);color:var(--color-no)}
 .mx-detail .d-st.un{background:var(--color-surface);color:var(--color-muted);border:1px solid var(--color-line)}
 .mx-detail .d-text{color:var(--color-text)}
+
+/* iOS: поля ввода ≥16px, иначе Safari зумит и дёргает скролл */
+.reg-controls select,
+.reg-controls input{font-size:16px}
+
+/* планшет: не даём бару переносить кнопки на вторую строку */
+@media (max-width: 900px){
+  .tabs{gap:4px;padding:3px}
+  .tab{padding:7px 10px;font-size:12px}
+  .bar-reset,.bar-logout{padding:7px 10px;font-size:12px}
+  .brand{font-size:14px}
+}

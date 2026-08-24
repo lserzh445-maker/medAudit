@@ -81,6 +81,8 @@ const useAuditStore = create(
 
       setDecision: (action) =>
         set(() => ({ decision: { action, decidedAt: new Date().toISOString() } })),
+
+      resetSession: () => set({ answers: {}, issues: {}, decision: null }),
     }),
     {
       name: `medaudit-${BLOCK.id}`,

@@ -11,6 +11,12 @@ const LINKS = [
 
 export default function AppShell({ children }) {
   const logout = useAuditStore((s) => s.logout)
+  const resetSession = useAuditStore((s) => s.resetSession)
+  const handleReset = () => {
+    if (window.confirm('Сбросить все ответы, проблемы и решение? Действие необратимо.')) {
+      resetSession()
+    }
+  }
   return (
     <div style={{ minHeight: '100vh' }}>
       <div className="bar">
@@ -30,7 +36,10 @@ export default function AppShell({ children }) {
               </NavLink>
             ))}
           </nav>
-          <button type="button" className="bar-logout" onClick={logout}>Выйти</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button type="button" className="bar-reset" onClick={handleReset}>Сбросить</button>
+            <button type="button" className="bar-logout" onClick={logout}>Выйти</button>
+          </div>
         </div>
       </div>
       <main className="app-main">{children}</main>

@@ -1,30 +1,39 @@
+import { NavLink } from 'react-router-dom'
 import { BLOCK } from '../../config/block.js'
-import Sidebar from './Sidebar.jsx'
+import useAuditStore from '../../store/useAuditStore.js'
+
+const LINKS = [
+  { to: '/checklist', label: 'Проверка' },
+  { to: '/matrix',    label: 'Матрица' },
+  { to: '/registry',  label: 'Реестр' },
+  { to: '/chief',     label: 'Кабинет главврача' },
+]
 
 export default function AppShell({ children }) {
+  const logout = useAuditStore((s) => s.logout)
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <header
-        style={{
-          background: 'var(--color-primary)',
-          color: '#fff',
-          padding: '0 24px',
-          height: '56px',
-          display: 'flex',
-          alignItems: 'center',
-          boxShadow: 'var(--shadow)',
-          flexShrink: 0,
-        }}
-      >
-        <span style={{ fontWeight: 700, fontSize: '18px' }}>МедАудит — {BLOCK.title}</span>
-      </header>
-
-      <div style={{ display: 'flex', flex: 1 }}>
-        <Sidebar />
-        <main style={{ flex: 1, padding: '32px 28px', overflowY: 'auto' }}>
-          {children}
-        </main>
+    <div style={{ minHeight: '100vh' }}>
+      <div className="bar">
+        <div className="bar-inner">
+          <div className="brand">
+            <span className="logo">✓</span>
+            МедАудит · {BLOCK.title}
+          </div>
+          <nav className="tabs">
+            {LINKS.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}
+              >
+                {l.label}
+              </NavLink>
+            ))}
+          </nav>
+          <button type="button" className="bar-logout" onClick={logout}>Выйти</button>
+        </div>
       </div>
+      <main className="app-main">{children}</main>
     </div>
   )
 }

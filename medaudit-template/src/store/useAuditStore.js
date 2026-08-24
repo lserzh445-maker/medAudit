@@ -8,6 +8,7 @@ const useAuditStore = create(
       loggedIn: false,
       answers: {},
       issues: {},
+      decision: null,
 
       login: () => set({ loggedIn: true }),
       logout: () => set({ loggedIn: false }),
@@ -77,10 +78,13 @@ const useAuditStore = create(
           if (!cur) return {}
           return { issues: { ...s.issues, [qId]: { ...cur, assignee: assignee || null } } }
         }),
+
+      setDecision: (action) =>
+        set(() => ({ decision: { action, decidedAt: new Date().toISOString() } })),
     }),
     {
       name: `medaudit-${BLOCK.id}`,
-      partialize: (state) => ({ answers: state.answers, issues: state.issues }),
+      partialize: (state) => ({ answers: state.answers, issues: state.issues, decision: state.decision }),
     }
   )
 )

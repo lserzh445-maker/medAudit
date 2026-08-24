@@ -9,13 +9,26 @@ export default function StatusSelect({ value, options, onChange }) {
     const onDoc = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
+    // pointerdown покрывает и мышь, и тач; capture — чтобы отработать
+    // раньше внутренних обработчиков
+    document.addEventListener('pointerdown', onDoc, true)
+    return () => document.removeEventListener('pointerdown', onDoc, true)
   }, [open])
+
+  const choose = (opt) => {
+    onChange(opt)
+    setOpen(false)
+  }
 
   return (
     <div className="ss" ref={ref}>
-      <button type="button" className="ss-trigger" onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className="ss-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
         <span>{value}</span>
         <span className="ss-caret">▾</span>
       </button>
@@ -27,7 +40,9 @@ export default function StatusSelect({ value, options, onChange }) {
               role="option"
               aria-selected={opt === value}
               className={`ss-opt ${opt === value ? 'sel' : ''}`}
-              onClick={() => { onChange(opt); setOpen(false) }}
+              // onPointerDown, а не onClick: срабатывает до внешнего
+              // pointerdown-слушателя закрытия и гарантирует выбор+закрытие
+              onPointerDown={(e) => { e.preventDefault(); choose(opt) }}
             >
               {opt === value ? '✓ ' : ''}{opt}
             </li>

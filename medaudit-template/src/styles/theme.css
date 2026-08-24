@@ -182,3 +182,8 @@ a:hover {
 .ss-opt{padding:9px 10px;border-radius:7px;font-size:14px;cursor:pointer;white-space:nowrap}
 .ss-opt:hover{background:var(--color-bg)}
 .ss-opt.sel{color:var(--color-primary);font-weight:700}
+
+/* фикс ширины дропдауна статуса — не скачет от длины текста */
+.reg-controls label:has(.ss){width:235px}
+.ss-trigger{white-space:nowrap;overflow:hidden}
+.ss-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis}

@@ -1,4 +1,5 @@
 import { ISSUE_STATUSES, STATUS_CLASS, isOverdue, daysOverdue } from '../../lib/issues.js'
+import StatusSelect from './StatusSelect.jsx'
 
 export default function IssueCard({ issue, questionText, blockTitle, onStatus, onDue, onAssignee }) {
   const over = isOverdue(issue)
@@ -13,9 +14,11 @@ export default function IssueCard({ issue, questionText, blockTitle, onStatus, o
       </div>
       <div className="reg-controls">
         <label>Статус
-          <select value={issue.status} onChange={(e) => onStatus(issue.questionId, e.target.value)}>
-            {ISSUE_STATUSES.map((st) => <option key={st} value={st}>{st}</option>)}
-          </select>
+          <StatusSelect
+            value={issue.status}
+            options={ISSUE_STATUSES}
+            onChange={(st) => onStatus(issue.questionId, st)}
+          />
         </label>
         <label>Срок
           <input type="date" value={issue.dueDate || ''} onChange={(e) => onDue(issue.questionId, e.target.value)} />

@@ -18,15 +18,23 @@ export default function RegistryScreen() {
 
   const list = Object.values(issues)
   const issueKeys = Object.keys(issues).sort().join(',')
-  const filtered = useMemo(() => {
-    return Object.values(issues).filter((it) => {
-      if (filter === 'open') return it.status !== 'закрыт'
-      if (filter === 'closed') return it.status === 'закрыт'
-      if (filter === 'over') return isOverdue(it)
-      return true
-    })
+
+  // membership фиксируется при смене фильтра/появлении-удалении факта,
+  // но НЕ при смене статуса существующего — карточка не выпрыгивает при правке
+  const visibleIds = useMemo(() => {
+    return Object.values(issues)
+      .filter((it) => {
+        if (filter === 'open') return it.status !== 'закрыт'
+        if (filter === 'closed') return it.status === 'закрыт'
+        if (filter === 'over') return isOverdue(it)
+        return true
+      })
+      .map((it) => it.questionId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, issueKeys])
+
+  // живые объекты — контролируемые поля отражают актуальное состояние
+  const filtered = visibleIds.map((id) => issues[id]).filter(Boolean)
 
   return (
     <AppShell>

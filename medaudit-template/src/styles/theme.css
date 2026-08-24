@@ -91,3 +91,27 @@ a:hover {
 .mx-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--color-muted)}
 .mx-legend span{display:inline-flex;align-items:center;gap:6px}
 .mx-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* ── Registry screen ── */
+.reg-filters{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;margin-bottom:6px}
+.reg-f{border:1px solid var(--color-line);background:#fff;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--color-muted);cursor:pointer}
+.reg-f.on{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+.reg-card{padding:14px 0;border-top:1px solid var(--color-line)}
+.reg-card:first-of-type{border-top:0}
+.reg-card.over{background:var(--color-no-bg);border-radius:10px;padding:14px 12px}
+.reg-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.reg-tag{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--color-primary-dark);background:#e9f4f1;padding:3px 8px;border-radius:6px}
+.reg-qtext{font-size:14px;margin-top:8px;max-width:560px}
+.reg-controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;align-items:flex-end}
+.reg-controls label{font-size:12px;color:var(--color-muted);display:flex;flex-direction:column;gap:4px}
+.reg-controls select,.reg-controls input{font:inherit;font-size:13px;padding:7px 9px;border:1.4px solid var(--color-line);border-radius:var(--radius-sm);background:#fff;color:var(--color-text)}
+.reg-due{font-size:12px;color:var(--color-muted);margin-top:8px}
+.reg-due.over{color:var(--color-no);font-weight:700}
+.reg-empty{text-align:center;color:var(--color-muted);padding:30px 0;font-size:14px}
+.reg-st{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;display:inline-block}
+.reg-st.st-vyv{background:var(--color-no-bg);color:var(--color-no)}
+.reg-st.st-per{background:#eef1f5;color:#4a6572}
+.reg-st.st-zay{background:var(--color-warn-bg);color:var(--color-warn)}
+.reg-st.st-pov{background:#eaf0f0;color:var(--color-primary-dark)}
+.reg-st.st-voz{background:#fff;color:var(--color-warn);border:1.4px solid var(--color-warn)}
+.reg-st.st-zak{background:var(--color-yes-bg);color:var(--color-yes)}

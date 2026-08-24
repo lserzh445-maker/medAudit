@@ -54,6 +54,29 @@ const useAuditStore = create(
           delete next[qId]
           return { answers: next }
         }),
+
+      setIssueStatus: (qId, status) =>
+        set((s) => {
+          const cur = s.issues[qId]
+          if (!cur) return {}
+          const closedAt =
+            status === 'закрыт' ? (cur.closedAt ?? new Date().toISOString()) : null
+          return { issues: { ...s.issues, [qId]: { ...cur, status, closedAt } } }
+        }),
+
+      setIssueDue: (qId, dueDate) =>
+        set((s) => {
+          const cur = s.issues[qId]
+          if (!cur) return {}
+          return { issues: { ...s.issues, [qId]: { ...cur, dueDate: dueDate || null } } }
+        }),
+
+      setIssueAssignee: (qId, assignee) =>
+        set((s) => {
+          const cur = s.issues[qId]
+          if (!cur) return {}
+          return { issues: { ...s.issues, [qId]: { ...cur, assignee: assignee || null } } }
+        }),
     }),
     {
       name: `medaudit-${BLOCK.id}`,

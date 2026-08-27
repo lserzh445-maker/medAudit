@@ -188,3 +188,6 @@ a:hover {
 .ss-trigger{white-space:nowrap;overflow:hidden}
 .ss-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis}
 .done-note{margin:12px 0;background:var(--color-yes-bg);color:var(--color-primary-dark);border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;font-weight:600}
+.attach-stub{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;font-weight:600;color:var(--color-muted);background:var(--color-bg);border:1px dashed var(--color-line);border-radius:20px;padding:4px 10px;cursor:not-allowed;user-select:none}
+.attach-ic{opacity:.7}
+.attach-hint{font-weight:500;font-style:italic;opacity:.8}

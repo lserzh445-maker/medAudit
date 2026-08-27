@@ -9,6 +9,9 @@ import { summarize } from '../lib/analytics.js'
 export default function ChecklistScreen() {
   const answers = useAuditStore((s) => s.answers)
   const setAnswer = useAuditStore((s) => s.setAnswer)
+  const completedAt = useAuditStore((s) => s.completedAt)
+  const completeSession = useAuditStore((s) => s.completeSession)
+  const reopenSession = useAuditStore((s) => s.reopenSession)
   const s = summarize(QUESTIONS, answers)
   const answered = s.total - s.unanswered
   const canFinish = s.unanswered === 0
@@ -35,23 +38,41 @@ export default function ChecklistScreen() {
         </div>
       </Card>
 
-      <Card>
-        <div className="eyebrow" style={{ marginBottom: '6px' }}>Блок «{BLOCK.title}» · нажмите ответ</div>
-        {QUESTIONS.map((q, i) => (
-          <QuestionRow key={q.id} index={i + 1} question={q} value={answers[q.id]} onPick={setAnswer} />
-        ))}
-        <div className="foot">
-          <span className="saved">✓ Сохранено автоматически</span>
-          <button
-            type="button"
-            className={`btn ${canFinish ? 'primary' : 'block'}`}
-            disabled={!canFinish}
-            title={canFinish ? '' : 'Сначала ответьте на все вопросы'}
-          >
-            Завершить проверку
+      {completedAt ? (
+        <Card>
+          <div className="eyebrow">Проверка завершена</div>
+          <h2 className="check-title">Готовность {s.readinessPct}%</h2>
+          <div className="check-sub">
+            Завершено {new Date(completedAt).toLocaleDateString('ru-RU')} · ответов «да»: {s.yes} · «нет»: {s.no}
+          </div>
+          <div className="done-note">
+            Результаты переданы главврачу. Перейдите в «Кабинет главврача»
+            для решения: повторный аудит, передача подрядчику или согласование запуска.
+          </div>
+          <button type="button" className="btn ghost" onClick={reopenSession}>
+            Возобновить проверку
           </button>
-        </div>
-      </Card>
+        </Card>
+      ) : (
+        <Card>
+          <div className="eyebrow" style={{ marginBottom: '6px' }}>Блок «{BLOCK.title}» · нажмите ответ</div>
+          {QUESTIONS.map((q, i) => (
+            <QuestionRow key={q.id} index={i + 1} question={q} value={answers[q.id]} onPick={setAnswer} />
+          ))}
+          <div className="foot">
+            <span className="saved">✓ Сохранено автоматически</span>
+            <button
+              type="button"
+              className={`btn ${canFinish ? 'primary' : 'block'}`}
+              disabled={!canFinish}
+              title={canFinish ? '' : 'Сначала ответьте на все вопросы'}
+              onClick={() => { if (canFinish) completeSession() }}
+            >
+              Завершить проверку
+            </button>
+          </div>
+        </Card>
+      )}
     </AppShell>
   )
 }

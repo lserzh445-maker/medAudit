@@ -187,3 +187,4 @@ a:hover {
 .reg-controls label:has(.ss){width:235px}
 .ss-trigger{white-space:nowrap;overflow:hidden}
 .ss-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis}
+.done-note{margin:12px 0;background:var(--color-yes-bg);color:var(--color-primary-dark);border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;font-weight:600}

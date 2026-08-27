@@ -9,6 +9,7 @@ const useAuditStore = create(
       answers: {},
       issues: {},
       decision: null,
+      completedAt: null,
 
       login: () => set({ loggedIn: true }),
       logout: () => set({ loggedIn: false }),
@@ -82,11 +83,14 @@ const useAuditStore = create(
       setDecision: (action) =>
         set(() => ({ decision: { action, decidedAt: new Date().toISOString() } })),
 
-      resetSession: () => set({ answers: {}, issues: {}, decision: null }),
+      completeSession: () => set({ completedAt: new Date().toISOString() }),
+      reopenSession: () => set({ completedAt: null }),
+
+      resetSession: () => set({ answers: {}, issues: {}, decision: null, completedAt: null }),
     }),
     {
       name: `medaudit-${BLOCK.id}`,
-      partialize: (state) => ({ answers: state.answers, issues: state.issues, decision: state.decision }),
+      partialize: (state) => ({ answers: state.answers, issues: state.issues, decision: state.decision, completedAt: state.completedAt }),
     }
   )
 )

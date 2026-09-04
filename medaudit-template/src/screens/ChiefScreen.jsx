@@ -28,6 +28,7 @@ export default function ChiefScreen() {
   const openCount = Object.values(issues).filter((i) => i.status !== 'закрыт').length
   const overdueCount = Object.values(issues).filter((i) => isOverdue(i)).length
   const rec = recommendedDecision(s.isReady)
+  const monRecommended = !monitoring && s.no >= 1
 
   // выбор меры; «reaudit» дополнительно разблокирует старт повторного аудита
   const onMeasure = (key) => {
@@ -130,7 +131,10 @@ export default function ChiefScreen() {
           </Card>
 
           <Card style={{ marginBottom: '16px' }}>
-            <div className="eyebrow" style={{ marginBottom: '10px' }}>Мониторинг устранения замечаний</div>
+            <div className="eyebrow" style={{ marginBottom: '10px', display:'flex', alignItems:'center', gap:'8px' }}>
+              Мониторинг устранения замечаний
+              {monRecommended && <span className="rec-tag">рекомендовано</span>}
+            </div>
             <div className="mon-row">
               <select
                 className="mon-select"
@@ -142,7 +146,7 @@ export default function ChiefScreen() {
               </select>
               <button
                 type="button"
-                className={`btn ${deputy ? 'primary' : 'block'}`}
+                className={`btn ${deputy ? 'primary' : 'block'} ${monRecommended ? 'btn-rec' : ''}`}
                 disabled={!deputy}
                 onClick={() => { if (deputy) assignMonitoring(deputy) }}
               >

@@ -15,6 +15,7 @@ export default function RegistryScreen() {
   const setIssueStatus = useAuditStore((s) => s.setIssueStatus)
   const setIssueDue = useAuditStore((s) => s.setIssueDue)
   const setIssueAssignee = useAuditStore((s) => s.setIssueAssignee)
+  const monitoring = useAuditStore((s) => s.monitoring)
   const [filter, setFilter] = useState('all')
 
   const list = Object.values(issues)
@@ -43,6 +44,11 @@ export default function RegistryScreen() {
         <div className="eyebrow">Реестр негативных фактов</div>
         <h2 className="check-title">Блок «{BLOCK.title}»</h2>
         <div className="check-sub">Каждый ответ «нет» попадает сюда автоматически и живёт, пока не закрыт</div>
+        {monitoring && (
+          <div className="mon-responsible">
+            Ответственный за мониторинг негативных фактов по блоку «{BLOCK.title}»: {monitoring.deputy}
+          </div>
+        )}
         <div className="reg-filters">
           {[['all', 'Все'], ['open', 'Открытые'], ['closed', 'Закрытые'], ['over', '⚠ Просроченные']].map(([k, label]) => (
             <span key={k} className={`reg-f ${filter === k ? 'on' : ''}`} onClick={() => setFilter(k)}>{label}</span>

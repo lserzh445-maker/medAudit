@@ -35,6 +35,8 @@ const useAuditStore = create(
           return {
             sessions: { ...s.sessions, repeat: inheritSession(s.sessions.primary, operator) },
             current: 'repeat',
+            monitoring: null,   // мониторинг прошлого круга исчерпан
+            decision: null,     // решение главврача относилось к первичному аудиту
           }
         }),
 

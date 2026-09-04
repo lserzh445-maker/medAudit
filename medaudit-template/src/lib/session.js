@@ -19,7 +19,9 @@ export function inheritSession(prev, operator) {
   const issues = {}
   for (const [qId, iss] of Object.entries(prev.issues)) {
     if (answers[qId] === 'no') {
-      issues[qId] = { ...iss, status: 'повторный аудит', closedAt: null }
+      // переоткрыт на новый круг: срок и исполнитель назначаются заново;
+      // createdAt (дата первого выявления) сохраняется
+      issues[qId] = { ...iss, status: 'повторный аудит', closedAt: null, dueDate: null, assignee: null }
     } else {
       // факт был закрыт (ответ «да») — переносим как есть
       issues[qId] = { ...iss }

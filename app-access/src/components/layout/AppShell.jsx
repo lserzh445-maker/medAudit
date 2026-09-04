@@ -21,9 +21,15 @@ export default function AppShell({ children }) {
     <div style={{ minHeight: '100vh' }}>
       <div className="bar">
         <div className="bar-inner">
-          <div className="brand">
-            <span className="logo">✓</span>
-            Аудит готовности здания МО · {BLOCK.title}
+          <div className="bar-row1">
+            <div className="brand">
+              <span className="logo">✓</span>
+              Аудит готовности здания МО · {BLOCK.title}
+            </div>
+            <div className="bar-actions">
+              <button type="button" className="bar-reset" onClick={handleReset}>Сбросить</button>
+              <button type="button" className="bar-logout" onClick={logout}>Выйти</button>
+            </div>
           </div>
           <nav className="tabs">
             {LINKS.map((l) => (
@@ -36,10 +42,6 @@ export default function AppShell({ children }) {
               </NavLink>
             ))}
           </nav>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="button" className="bar-reset" onClick={handleReset}>Сбросить</button>
-            <button type="button" className="bar-logout" onClick={logout}>Выйти</button>
-          </div>
         </div>
       </div>
       <main className="app-main">{children}</main>

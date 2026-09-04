@@ -8,7 +8,8 @@ import useAuditStore from '../store/useAuditStore.js'
 import { summarize } from '../lib/analytics.js'
 
 export default function MatrixScreen() {
-  const answers = useAuditStore((s) => s.answers)
+  const session = useAuditStore((s) => s.sessions[s.current])
+  const answers = session?.answers || {}
   const s = summarize(QUESTIONS, answers)
   const [selected, setSelected] = useState(null)
   const select = (i) => setSelected(i)

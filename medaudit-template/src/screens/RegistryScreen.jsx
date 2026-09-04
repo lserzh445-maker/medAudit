@@ -10,7 +10,8 @@ import { isOverdue } from '../lib/issues.js'
 const QMAP = Object.fromEntries(QUESTIONS.map((q) => [q.id, q.text]))
 
 export default function RegistryScreen() {
-  const issues = useAuditStore((s) => s.issues)
+  const session = useAuditStore((s) => s.sessions[s.current])
+  const issues = session?.issues || {}
   const setIssueStatus = useAuditStore((s) => s.setIssueStatus)
   const setIssueDue = useAuditStore((s) => s.setIssueDue)
   const setIssueAssignee = useAuditStore((s) => s.setIssueAssignee)

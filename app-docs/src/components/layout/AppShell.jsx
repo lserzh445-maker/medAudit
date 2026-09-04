@@ -23,7 +23,7 @@ export default function AppShell({ children }) {
         <div className="bar-inner">
           <div className="brand">
             <span className="logo">✓</span>
-            МедАудит · {BLOCK.title}
+            Аудит готовности здания МО · {BLOCK.title}
           </div>
           <nav className="tabs">
             {LINKS.map((l) => (

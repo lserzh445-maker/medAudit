@@ -44,7 +44,7 @@ export default function LoginScreen() {
       }}
     >
       <Card style={{ width: '360px' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>МедАудит</h1>
+        <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>Аудит готовности здания МО</h1>
         <p style={{ color: 'var(--color-muted)', fontSize: '14px', marginBottom: '24px' }}>
           Войдите для продолжения
         </p>

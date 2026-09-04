@@ -7,7 +7,7 @@ import { BLOCK } from '../config/block.js'
 import useAuditStore from '../store/useAuditStore.js'
 import { summarize } from '../lib/analytics.js'
 import { isOverdue } from '../lib/issues.js'
-import { DECISION_ORDER, DECISIONS, recommendedDecision } from '../lib/decisions.js'
+import { DECISION_ORDER, DECISIONS } from '../lib/decisions.js'
 import { DEPUTIES } from '../lib/deputies.js'
 
 export default function ChiefScreen() {
@@ -27,7 +27,6 @@ export default function ChiefScreen() {
   const s = summarize(QUESTIONS, answers)
   const openCount = Object.values(issues).filter((i) => i.status !== 'закрыт').length
   const overdueCount = Object.values(issues).filter((i) => isOverdue(i)).length
-  const rec = recommendedDecision(s.isReady)
   const monRecommended = !monitoring && s.no >= 1
 
   // выбор меры; «reaudit» дополнительно разблокирует старт повторного аудита
@@ -105,54 +104,52 @@ export default function ChiefScreen() {
           <Card style={{ marginBottom: '16px' }}>
             <div className="eyebrow" style={{ marginBottom: '10px' }}>Меры по итогам оценки</div>
             <div className="measures">
+              {/* меры-вердикты (без авто-рекомендации — правила в ФТ нет) */}
               {DECISION_ORDER.map((key) => {
                 const chosen = decision?.action === key
-                const isRec = !decision && key === rec
                 return (
                   <button
                     key={key}
                     type="button"
-                    className={`measure ${chosen ? 'chosen' : ''} ${isRec ? 'rec' : ''}`}
+                    className={`measure ${chosen ? 'chosen' : ''}`}
                     onClick={() => onMeasure(key)}
                   >
                     <span>{DECISIONS[key].label}</span>
-                    {isRec && <span className="rec-tag">рекомендовано</span>}
                     {chosen && <span className="rec-tag">✓ выбрано</span>}
                   </button>
                 )
               })}
+
+              {/* третья мера — мониторинг, со встроенным выбором ФИО */}
+              <div className={`measure measure-mon ${monitoring ? 'chosen' : ''} ${monRecommended ? 'rec' : ''}`}>
+                <div className="measure-mon-head">
+                  <span>Поручить мониторинг устранения замечаний заместителю главврача</span>
+                  {monRecommended && <span className="rec-tag">рекомендовано</span>}
+                  {monitoring && <span className="rec-tag">✓ выбрано</span>}
+                </div>
+                <div className="mon-row">
+                  <select className="mon-select" value={deputy} onChange={(e) => setDeputy(e.target.value)}>
+                    <option value="">Выберите заместителя…</option>
+                    {DEPUTIES.map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    className={`btn ${deputy ? 'primary' : 'block'}`}
+                    disabled={!deputy}
+                    onClick={() => { if (deputy) assignMonitoring(deputy) }}
+                  >
+                    Поручить
+                  </button>
+                </div>
+              </div>
             </div>
+
             {decision && (
               <div className="decision-note">
                 Решение: {DECISIONS[decision.action].done} · {new Date(decision.decidedAt).toLocaleDateString('ru-RU')}
                 {decision.action === 'reaudit' ? ' · повторный аудит разблокирован на «Проверке»' : ''}
               </div>
             )}
-          </Card>
-
-          <Card style={{ marginBottom: '16px' }}>
-            <div className="eyebrow" style={{ marginBottom: '10px', display:'flex', alignItems:'center', gap:'8px' }}>
-              Мониторинг устранения замечаний
-              {monRecommended && <span className="rec-tag">рекомендовано</span>}
-            </div>
-            <div className="mon-row">
-              <select
-                className="mon-select"
-                value={deputy}
-                onChange={(e) => setDeputy(e.target.value)}
-              >
-                <option value="">Выберите заместителя…</option>
-                {DEPUTIES.map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
-              <button
-                type="button"
-                className={`btn ${deputy ? 'primary' : 'block'} ${monRecommended ? 'btn-rec' : ''}`}
-                disabled={!deputy}
-                onClick={() => { if (deputy) assignMonitoring(deputy) }}
-              >
-                Поручить мониторинг заместителю
-              </button>
-            </div>
             {monitoring && (
               <>
                 <div className="decision-note">

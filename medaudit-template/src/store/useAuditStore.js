@@ -1,96 +1,135 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { BLOCK } from '../config/block.js'
+import { emptySession, inheritSession } from '../lib/session.js'
 
 const useAuditStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       loggedIn: false,
-      answers: {},
-      issues: {},
+
+      sessions: { primary: null, repeat: null },
+      current: 'primary',        // какую сессию показывают экраны
+      reauditUnlocked: false,    // разблокировка «Начать повторный аудит»
       decision: null,
-      completedAt: null,
 
       login: () => set({ loggedIn: true }),
       logout: () => set({ loggedIn: false }),
 
+      // ── СЕЛЕКТОРЫ (экраны читают данные текущей сессии через них) ──
+      getSession: () => get().sessions[get().current] || null,
+      getAnswers: () => (get().sessions[get().current]?.answers) || {},
+      getIssues: () => (get().sessions[get().current]?.issues) || {},
+
+      // ── ЖИЗНЕННЫЙ ЦИКЛ СЕССИЙ ──
+      startPrimary: (operator) =>
+        set((s) => ({
+          sessions: { ...s.sessions, primary: emptySession(operator) },
+          current: 'primary',
+        })),
+
+      startRepeat: (operator) =>
+        set((s) => {
+          if (!s.reauditUnlocked || !s.sessions.primary) return {}
+          return {
+            sessions: { ...s.sessions, repeat: inheritSession(s.sessions.primary, operator) },
+            current: 'repeat',
+          }
+        }),
+
+      completeSession: () =>
+        set((s) => {
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur) return {}
+          return { sessions: { ...s.sessions, [key]: { ...cur, completedAt: new Date().toISOString() } } }
+        }),
+
+      reopenSession: () =>
+        set((s) => {
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur) return {}
+          return { sessions: { ...s.sessions, [key]: { ...cur, completedAt: null } } }
+        }),
+
+      unlockReaudit: () => set({ reauditUnlocked: true }),
+
+      // ── ОТВЕТЫ И ФАКТЫ (пишут в текущую сессию) ──
       setAnswer: (qId, value) =>
         set((s) => {
-          const answers = { ...s.answers, [qId]: value }
-          let issues = s.issues
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur) return {}
+          const answers = { ...cur.answers, [qId]: value }
+          let issues = cur.issues
 
           if (value === 'no') {
-            const cur = issues[qId]
-            if (!cur) {
+            const iss = issues[qId]
+            if (!iss) {
               issues = {
                 ...issues,
                 [qId]: {
-                  questionId: qId,
-                  blockId: BLOCK.id,
-                  status: 'выявлен',
-                  createdAt: new Date().toISOString(),
-                  closedAt: null,
-                  dueDate: null,
-                  assignee: null,
+                  questionId: qId, blockId: BLOCK.id, status: 'выявлен',
+                  createdAt: new Date().toISOString(), closedAt: null,
+                  dueDate: null, assignee: null,
                 },
               }
-            } else if (cur.status === 'закрыт') {
-              issues = { ...issues, [qId]: { ...cur, status: 'выявлен', closedAt: null } }
+            } else if (iss.status === 'закрыт') {
+              issues = { ...issues, [qId]: { ...iss, status: 'выявлен', closedAt: null } }
             }
           } else if (value === 'yes') {
-            const cur = issues[qId]
-            if (cur && cur.status !== 'закрыт') {
-              issues = {
-                ...issues,
-                [qId]: { ...cur, status: 'закрыт', closedAt: new Date().toISOString() },
-              }
+            const iss = issues[qId]
+            if (iss && iss.status !== 'закрыт') {
+              issues = { ...issues, [qId]: { ...iss, status: 'закрыт', closedAt: new Date().toISOString() } }
             }
           }
-
-          return { answers, issues }
-        }),
-
-      resetAnswer: (qId) =>
-        set((state) => {
-          const next = { ...state.answers }
-          delete next[qId]
-          return { answers: next }
+          return { sessions: { ...s.sessions, [key]: { ...cur, answers, issues } } }
         }),
 
       setIssueStatus: (qId, status) =>
         set((s) => {
-          const cur = s.issues[qId]
-          if (!cur) return {}
-          const closedAt =
-            status === 'закрыт' ? (cur.closedAt ?? new Date().toISOString()) : null
-          return { issues: { ...s.issues, [qId]: { ...cur, status, closedAt } } }
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur || !cur.issues[qId]) return {}
+          const iss = cur.issues[qId]
+          const closedAt = status === 'закрыт' ? (iss.closedAt ?? new Date().toISOString()) : null
+          return { sessions: { ...s.sessions, [key]: { ...cur, issues: { ...cur.issues, [qId]: { ...iss, status, closedAt } } } } }
         }),
 
       setIssueDue: (qId, dueDate) =>
         set((s) => {
-          const cur = s.issues[qId]
-          if (!cur) return {}
-          return { issues: { ...s.issues, [qId]: { ...cur, dueDate: dueDate || null } } }
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur || !cur.issues[qId]) return {}
+          const iss = cur.issues[qId]
+          return { sessions: { ...s.sessions, [key]: { ...cur, issues: { ...cur.issues, [qId]: { ...iss, dueDate: dueDate || null } } } } }
         }),
 
       setIssueAssignee: (qId, assignee) =>
         set((s) => {
-          const cur = s.issues[qId]
-          if (!cur) return {}
-          return { issues: { ...s.issues, [qId]: { ...cur, assignee: assignee || null } } }
+          const key = s.current
+          const cur = s.sessions[key]
+          if (!cur || !cur.issues[qId]) return {}
+          const iss = cur.issues[qId]
+          return { sessions: { ...s.sessions, [key]: { ...cur, issues: { ...cur.issues, [qId]: { ...iss, assignee: assignee || null } } } } }
         }),
 
       setDecision: (action) =>
         set(() => ({ decision: { action, decidedAt: new Date().toISOString() } })),
 
-      completeSession: () => set({ completedAt: new Date().toISOString() }),
-      reopenSession: () => set({ completedAt: null }),
-
-      resetSession: () => set({ answers: {}, issues: {}, decision: null, completedAt: null }),
+      // полный сброс демо
+      resetSession: () =>
+        set({ sessions: { primary: null, repeat: null }, current: 'primary', reauditUnlocked: false, decision: null }),
     }),
     {
-      name: `medaudit-${BLOCK.id}`,
-      partialize: (state) => ({ answers: state.answers, issues: state.issues, decision: state.decision, completedAt: state.completedAt }),
+      name: `medaudit-${BLOCK.id}-v2`,
+      partialize: (state) => ({
+        sessions: state.sessions,
+        current: state.current,
+        reauditUnlocked: state.reauditUnlocked,
+        decision: state.decision,
+      }),
     }
   )
 )

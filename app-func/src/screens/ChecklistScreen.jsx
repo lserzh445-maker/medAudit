@@ -22,7 +22,8 @@ export default function ChecklistScreen() {
         <div className="check-head">
           <div>
             <div className="eyebrow">Аудиторская сессия</div>
-            <h2 className="check-title">Демонстрационный объект</h2>
+            <h2 className="check-title ph">Наименование медицинской организации</h2>
+            <div className="ph-line">Адрес объекта</div>
             <div className="check-sub">Первичный аудит · черновик</div>
           </div>
           <span className="chip">Черновик</span>

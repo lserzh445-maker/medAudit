@@ -197,3 +197,5 @@ a:hover {
 .attach-ic{opacity:.7}
 .attach-hint{font-weight:500;font-style:italic;opacity:.8}
 .logo{flex-shrink:0}
+.check-title.ph{color:var(--color-muted);font-weight:600}
+.ph-line{color:var(--color-muted);font-size:14px;font-style:italic;margin-top:2px}

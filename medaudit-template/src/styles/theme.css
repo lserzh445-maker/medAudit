@@ -199,3 +199,5 @@ a:hover {
 .logo{flex-shrink:0}
 .check-title.ph{color:var(--color-muted);font-weight:600}
 .ph-line{color:var(--color-muted);font-size:14px;font-style:italic;margin-top:2px}
+.start-field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--color-muted);margin-bottom:14px;max-width:360px}
+.start-field input{font:inherit;font-size:16px;padding:9px 11px;border:1.4px solid var(--color-line);border-radius:var(--radius-sm);background:#fff;color:var(--color-text)}

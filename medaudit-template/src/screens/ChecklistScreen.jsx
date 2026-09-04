@@ -102,15 +102,36 @@ export default function ChecklistScreen() {
             для решения по объекту.
           </div>
           {current === 'primary' && (
-            <button
-              type="button"
-              className={`btn ${reauditUnlocked ? 'primary' : 'block'}`}
-              disabled={!reauditUnlocked}
-              title={reauditUnlocked ? '' : 'Активируется после решения главврача «Назначить повторный аудит»'}
-              onClick={() => { if (reauditUnlocked) startRepeat(session.operator) }}
-            >
-              Начать повторный аудит
-            </button>
+            reauditUnlocked ? (
+              <div style={{ marginTop: '12px' }}>
+                <label className="start-field">
+                  ФИО сотрудника повторного аудита, должность
+                  <input
+                    type="text"
+                    value={operator}
+                    onChange={(e) => setOperator(e.target.value)}
+                    placeholder="Петров И.С., инженер"
+                  />
+                </label>
+                <button
+                  type="button"
+                  className={`btn ${operator.trim() ? 'primary' : 'block'}`}
+                  disabled={!operator.trim()}
+                  onClick={() => { if (operator.trim()) startRepeat(operator.trim()) }}
+                >
+                  Начать повторный аудит
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="btn block"
+                disabled
+                title="Активируется после решения главврача «Назначить повторный аудит»"
+              >
+                Начать повторный аудит
+              </button>
+            )
           )}
           {current === 'primary' && !reauditUnlocked && (
             <div className="check-sub" style={{ marginTop: '8px', fontStyle: 'italic' }}>

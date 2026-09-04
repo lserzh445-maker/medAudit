@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import AppShell from '../components/layout/AppShell.jsx'
 import Card from '../components/ui/Card.jsx'
 import ReadinessRing from '../components/chief/ReadinessRing.jsx'
@@ -7,6 +8,7 @@ import useAuditStore from '../store/useAuditStore.js'
 import { summarize } from '../lib/analytics.js'
 import { isOverdue } from '../lib/issues.js'
 import { DECISION_ORDER, DECISIONS, recommendedDecision } from '../lib/decisions.js'
+import { DEPUTIES } from '../lib/deputies.js'
 
 export default function ChiefScreen() {
   const sessions = useAuditStore((s) => s.sessions)
@@ -14,6 +16,9 @@ export default function ChiefScreen() {
   const decision = useAuditStore((s) => s.decision)
   const setDecision = useAuditStore((s) => s.setDecision)
   const unlockReaudit = useAuditStore((s) => s.unlockReaudit)
+  const monitoring = useAuditStore((s) => s.monitoring)
+  const assignMonitoring = useAuditStore((s) => s.assignMonitoring)
+  const [deputy, setDeputy] = useState('')
 
   const session = sessions[current]
   const answers = session?.answers || {}
@@ -121,6 +126,36 @@ export default function ChiefScreen() {
                 Решение: {DECISIONS[decision.action].done} · {new Date(decision.decidedAt).toLocaleDateString('ru-RU')}
                 {decision.action === 'reaudit' ? ' · повторный аудит разблокирован на «Проверке»' : ''}
               </div>
+            )}
+          </Card>
+
+          <Card style={{ marginBottom: '16px' }}>
+            <div className="eyebrow" style={{ marginBottom: '10px' }}>Мониторинг устранения замечаний</div>
+            <div className="mon-row">
+              <select
+                className="mon-select"
+                value={deputy}
+                onChange={(e) => setDeputy(e.target.value)}
+              >
+                <option value="">Выберите заместителя…</option>
+                {DEPUTIES.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <button
+                type="button"
+                className={`btn ${deputy ? 'primary' : 'block'}`}
+                disabled={!deputy}
+                onClick={() => { if (deputy) assignMonitoring(deputy) }}
+              >
+                Поручить мониторинг заместителю
+              </button>
+            </div>
+            {monitoring && (
+              <>
+                <div className="decision-note">
+                  Решение: мониторинг устранения замечаний поручен — {monitoring.deputy} · {new Date(monitoring.assignedAt).toLocaleDateString('ru-RU')}
+                </div>
+                <div className="mon-notify">✓ Уведомление заместителю отправлено (демонстрационная заглушка)</div>
+              </>
             )}
           </Card>
 

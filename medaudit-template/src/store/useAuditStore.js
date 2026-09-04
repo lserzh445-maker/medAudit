@@ -12,6 +12,7 @@ const useAuditStore = create(
       current: 'primary',        // какую сессию показывают экраны
       reauditUnlocked: false,    // разблокировка «Начать повторный аудит»
       decision: null,
+      monitoring: null,   // { deputy, assignedAt } | null
 
       login: () => set({ loggedIn: true }),
       logout: () => set({ loggedIn: false }),
@@ -118,9 +119,12 @@ const useAuditStore = create(
       setDecision: (action) =>
         set(() => ({ decision: { action, decidedAt: new Date().toISOString() } })),
 
+      assignMonitoring: (deputy) =>
+        set(() => ({ monitoring: { deputy, assignedAt: new Date().toISOString() } })),
+
       // полный сброс демо
       resetSession: () =>
-        set({ sessions: { primary: null, repeat: null }, current: 'primary', reauditUnlocked: false, decision: null }),
+        set({ sessions: { primary: null, repeat: null }, current: 'primary', reauditUnlocked: false, decision: null, monitoring: null }),
     }),
     {
       name: `medaudit-${BLOCK.id}-v2`,
@@ -129,6 +133,7 @@ const useAuditStore = create(
         current: state.current,
         reauditUnlocked: state.reauditUnlocked,
         decision: state.decision,
+        monitoring: state.monitoring,
       }),
     }
   )
